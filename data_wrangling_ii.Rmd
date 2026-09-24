@@ -10,6 +10,7 @@ This file is for data imports.
 library(tidyverse)
 library(readxl)
 library(haven)
+library(ggplot2)
 ```
 
 ## Load first data set:
@@ -124,7 +125,7 @@ litters_df |>
 litters_df = read_csv(file = "data/FAS_litters.csv", 
            na = c('.', "NA", "")) |> 
   janitor::clean_names() |> 
-  select(starts_with("gd")) |> 
+  select(group, starts_with("gd")) |> 
   drop_na() |> 
   mutate(
     wt_gain = gd18_weight - gd0_weight
@@ -142,6 +143,23 @@ pups_df = read_csv(file = "data/FAS_pups.csv",
   mutate(
     pd_walk_minus_7 = pd_walk - 7
   )
+```
+
+# Fitting a linear model:
+```{r}
+litters_df |> 
+  lm(gd18_weight ~ gd0_weight, data = _) |> # add underscore to pipe data into the right place. 
+  summary()
+```
+
+## Scatterplot
+```{r}
+litters_df |> 
+  group_by(group) |> 
+  summarize(gd0_weight_var = var(gd0_weight), gd18_weight_var = var(gd18_weight), mean_gain = mean(wt_gain)) |> 
+  ggplot(aes(x = mean_gain, y = gd0_weight_var, color = group)) +
+  geom_point() +
+  geom_smooth(method = "lm")
 ```
 
 

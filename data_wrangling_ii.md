@@ -23,6 +23,7 @@ library(tidyverse)
 ``` r
 library(readxl)
 library(haven)
+library(ggplot2)
 ```
 
 ## Load first data set:
@@ -457,7 +458,7 @@ litters_df |>
 litters_df = read_csv(file = "data/FAS_litters.csv", 
            na = c('.', "NA", "")) |> 
   janitor::clean_names() |> 
-  select(starts_with("gd")) |> 
+  select(group, starts_with("gd")) |> 
   drop_na() |> 
   mutate(
     wt_gain = gd18_weight - gd0_weight
@@ -495,3 +496,45 @@ pups_df = read_csv(file = "data/FAS_pups.csv",
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+# Fitting a linear model:
+
+``` r
+litters_df |> 
+  lm(gd18_weight ~ gd0_weight, data = _) |> # add underscore to pipe data into the right place. 
+  summary()
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = gd18_weight ~ gd0_weight, data = litters_df)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.7788 -1.7610 -0.3744  1.3484  4.4011 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  15.3424     2.8709   5.344 9.75e-06 ***
+    ## gd0_weight    1.0842     0.1178   9.204 4.18e-10 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 2.114 on 29 degrees of freedom
+    ## Multiple R-squared:  0.745,  Adjusted R-squared:  0.7362 
+    ## F-statistic: 84.72 on 1 and 29 DF,  p-value: 4.181e-10
+
+## Scatterplot
+
+``` r
+litters_df |> 
+  group_by(group) |> 
+  summarize(gd0_weight_var = var(gd0_weight), gd18_weight_var = var(gd18_weight), mean_gain = mean(wt_gain)) |> 
+  ggplot(aes(x = mean_gain, y = gd0_weight_var, color = group)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+    ## `geom_smooth()` using formula = 'y ~ x'
+
+![](data_wrangling_ii_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
