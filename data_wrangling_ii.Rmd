@@ -110,8 +110,39 @@ pups_df |>
   )
 ```
 
+# `arrange` data:
+```{r}
+litters_df |> 
+  arrange(pups_born_alive)
 
+litters_df |> 
+  arrange(desc(pups_born_alive))
+```
 
+## Do multiple steps:
+```{r}
+litters_df = read_csv(file = "data/FAS_litters.csv", 
+           na = c('.', "NA", "")) |> 
+  janitor::clean_names() |> 
+  select(starts_with("gd")) |> 
+  drop_na() |> 
+  mutate(
+    wt_gain = gd18_weight - gd0_weight
+  )
+```
+
+# Load pups, clean names, drop missing, keep group and pd vars and pd walk -7
+```{r}
+pups_df = read_csv(file = "data/FAS_pups.csv",
+          skip = 3,
+          na = c('.', "NA", "")) |> 
+  janitor::clean_names() |> 
+  select(litter_number, contains("pd")) |> 
+  drop_na() |> 
+  mutate(
+    pd_walk_minus_7 = pd_walk - 7
+  )
+```
 
 
 
