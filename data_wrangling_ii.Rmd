@@ -35,61 +35,72 @@ pups_df =
 pups_df = janitor::clean_names(pups_df)
 ```
 
-## Look at data head/tail:
-```{r}
-head(litters_df)
+## `select` some variables:
 
-tail(pups_df)
+```{r}
+litters_df |> 
+  select(group, litter_number)
+
+litters_df |> 
+  select(group:gd_of_birth)
+
+litters_df |> 
+  select(-pups_survive)
+
+litters_df |> 
+  select(starts_with("gd"), group) # reorders columns
+
+litters_df |> 
+  select(GROUP = group, everything())
+```
+
+## Rename and relocate data
+```{r}
+litters_df |> 
+  rename(GROUP = group)
+
+litters_df |> 
+  relocate(litter_number, gd0_weight) # Moves columns to the front of the DF.
 ```
 
 
-## Skim to summarize info about data.
+## In the pups data select litter #, sex, and PD ears.
 ```{r}
-skimr::skim(pups_df)
+pups_df |> 
+  select(litter_number, sex, pd_ears)
 ```
 
-## Oh excel ...
+## `filter` some rows:
 ```{r}
-# Load mlb data:
-mlb_df = read_excel("data/mlb11.xlsx")
+litters_df |> 
+  filter(gd_of_birth == 20, pups_born_alive != 6, pups_born_alive < 10)
+
+litters_df |> 
+  filter(group %in% c("Con7", "Con8"))
+
+litters_df |> 
+  drop_na()
+
+litters_df |> 
+  drop_na(gd0_weight)
 ```
 
-### Look at excel data:
+# In the pups data, keep only rows where PD walk is < 11 and sex is 2:
 ```{r}
-head(mlb_df)
-```
-
-## Load some LOTR data:
-```{r}
-# Load FOTR:
-fotr_df = read_excel("data/LotR_Words.xlsx", 
-                     range = "B3:D6")
-# Clean names:
-fotr_df = janitor::clean_names(fotr_df)
-
-fotr_df
-
-# Load two towers:
-tt_df = read_excel("data/LotR_Words.xlsx", 
-                     range = "F3:H6")
-
-# Clean names:
-tt_df = janitor::clean_names(tt_df)
-
-tt_df
+pups_df |> 
+  filter(pd_walk < 11, sex == 2)
 ```
 
 
-## Import SAS
-Read in PULSE data:
-```{r}
-# Load Data:
-pulse_df = 
-  read_sas("data/public_pulse_data.sas7bdat")
 
-# Clean names:
-pulse_df = janitor::clean_names(pulse_df)
 
-pulse_df
-```
+
+
+
+
+
+
+
+
+
 
