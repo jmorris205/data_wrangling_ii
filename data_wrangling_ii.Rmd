@@ -91,7 +91,24 @@ pups_df |>
   filter(pd_walk < 11, sex == 2)
 ```
 
+## `mutate` to change columns
+```{r}
+# Add and change some columns:
+litters_df |> 
+  mutate(
+    wt_gain = gd18_weight - gd0_weight,
+    wt_gain_squared = wt_gain^2,
+    group = str_to_lower(group)
+  )
+```
 
+# In the pups dataset, create a var that subtracts 7 from PD walk:
+```{r}
+pups_df |> 
+  mutate(
+    pd_walk_minus_7 = pd_walk - 7
+  )
+```
 
 
 
